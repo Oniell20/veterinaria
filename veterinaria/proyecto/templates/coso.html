@@ -1,0 +1,887 @@
+<!DOCTYPE html> 
+<html lang="es">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Dashboard | ZenithVet</title>  
+    <script src="https://cdn.tailwindcss.com"></script>  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">  
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">  
+    
+    <style>  
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }  
+        
+        .sidebar-item { transition: all 0.2s ease; }  
+        .sidebar-item:hover { background: rgba(59, 130, 246, 0.1); color: #2563eb; }  
+        .sidebar-item.active { background: rgba(59, 130, 246, 0.1); color: #2563eb; font-weight: 700; }  
+
+        .stat-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }  
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08); }  
+
+        .module-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }  
+        .module-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.3); }  
+        .module-btn.active-module { background: #2563eb; color: white; border-color: #2563eb; box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.3); }  
+
+        .tab-content { display: none; }  
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }  
+
+        @keyframes fadeIn {  
+            from { opacity: 0; transform: translateY(10px); }  
+            to { opacity: 1; transform: translateY(0); }  
+        }  
+
+        @keyframes pulse-dot {  
+            0%, 100% { opacity: 1; }  
+            50% { opacity: 0.5; }  
+        }  
+        .status-dot { animation: pulse-dot 1.5s infinite; }  
+
+        .progress-bar {  
+            background: linear-gradient(90deg, #2563eb, #60a5fa);  
+            transition: width 1s ease;  
+        }  
+
+        .table-row-hover:hover { background: rgba(59, 130, 246, 0.04); }  
+
+        /* Scrollbar personalizado */  
+        ::-webkit-scrollbar { width: 6px; }  
+        ::-webkit-scrollbar-track { background: #f1f5f9; }  
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }  
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }  
+
+        .notification-badge {  
+            position: absolute;  
+            top: -4px;  
+            right: -4px;  
+            background: #ef4444;  
+            color: white;  
+            font-size: 10px;  
+            font-weight: 700;  
+            width: 18px;  
+            height: 18px;  
+            border-radius: 50%;  
+            display: flex;  
+            align-items: center;  
+            justify-content: center;  
+            border: 2px solid white;  
+        }  
+
+        select, input[type="date"] {  
+            font-family: 'Plus Jakarta Sans', sans-serif;  
+        }  
+    </style>  
+</head>  
+<body class="bg-slate-50 flex">  
+
+    <!-- SIDEBAR -->  
+    <aside class="w-64 bg-white h-screen border-r border-slate-200 hidden lg:flex flex-col sticky top-0 z-20">  
+    <div class="p-6 flex items-center space-x-3">  
+        <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-400 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">  
+            <i class="fas fa-paw"></i>  
+        </div>  
+        <span class="text-xl font-extrabold text-slate-900 tracking-tight">ZenithVet</span>  
+    </div>  
+
+    <nav class="flex-1 px-4 space-y-1 mt-2 overflow-y-auto">  
+        <!-- DASHBOARD -->
+        <a href="{% url 'dashboard' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.resolver_match.url_name == 'dashboard' %} bg-blue-50 text-blue-700 font-bold {% else %} text-slate-500 hover:bg-slate-50 font-medium {% endif %}">  
+            <i class="fas fa-th-large w-5 {% if request.resolver_match.url_name == 'dashboard' %} text-blue-600 {% endif %}"></i> 
+            <span>Dashboard</span>  
+        </a>  
+
+        <!-- AGENDA -->
+        <a href="{% url 'agenda' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.resolver_match.url_name == 'agenda' %} bg-blue-50 text-blue-700 font-bold {% else %} text-slate-500 hover:bg-slate-50 font-medium {% endif %}">  
+            <i class="fas fa-calendar-alt w-5 {% if request.resolver_match.url_name == 'agenda' %} text-blue-600 {% endif %}"></i> 
+            <span>Agenda</span>  
+            <span class="ml-auto bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full">12</span>  
+        </a>  
+
+        <!-- PACIENTES -->
+        <a href="{% url 'pacientes' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.resolver_match.url_name == 'pacientes' %} bg-blue-50 text-blue-700 font-bold {% else %} text-slate-500 hover:bg-slate-50 font-medium {% endif %}">  
+            <i class="fas fa-user-md w-5 {% if request.resolver_match.url_name == 'pacientes' %} text-blue-600 {% endif %}"></i> 
+            <span>Pacientes</span>  
+            <span class="ml-auto bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full">48</span>  
+        </a>  
+
+        <!-- INVENTARIO -->
+        <a href="{% url 'inventario' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.resolver_match.url_name == 'inventario' %} bg-blue-50 text-blue-700 font-bold {% else %} text-slate-500 hover:bg-slate-50 font-medium {% endif %}">  
+            <i class="fas fa-boxes w-5 {% if request.resolver_match.url_name == 'inventario' %} text-blue-600 {% endif %}"></i> 
+            <span>Inventario</span>  
+        </a>  
+
+        <!-- PELUQUERÍA -->
+        <a href="{% url 'peluqueria' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.resolver_match.url_name == 'peluqueria' %} bg-blue-50 text-blue-700 font-bold {% else %} text-slate-500 hover:bg-slate-50 font-medium {% endif %}">  
+            <i class="fas fa-cut w-5 {% if request.resolver_match.url_name == 'peluqueria' %} text-blue-600 {% endif %}"></i> 
+            <span>Peluquería</span>  
+        </a>  
+
+       
+
+        <!-- DIVIDER PARA OTROS MÓDULOS -->
+        <div class="pt-4 pb-2">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3">Gestión Avanzada</p>
+        </div>
+
+         <!-- CONTABILIDAD / CAJA -->
+        <a href="{% url 'caja' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.resolver_match.url_name == 'caja' %} bg-blue-50 text-blue-700 font-bold {% else %} text-slate-500 hover:bg-slate-50 font-medium {% endif %}">  
+            <i class="fas fa-calculator w-5 {% if request.resolver_match.url_name == 'caja' %} text-blue-600 {% endif %}"></i> 
+            <span>Contabilidad</span>  
+        </a>  
+
+        <!-- ANALYTICS / REPORTES -->
+        <a href="{% url 'reportes' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.resolver_match.url_name == 'reportes' %} bg-blue-50 text-blue-700 font-bold {% else %} text-slate-500 hover:bg-slate-50 font-medium {% endif %}">  
+            <i class="fas fa-chart-line w-5 {% if request.resolver_match.url_name == 'reportes' %} text-blue-600 {% endif %}"></i> 
+            <span>Analytics</span>  
+        </a>
+
+        <!-- MULTI-CLÍNICA -->
+        <a href="#" class="flex items-center space-x-3 p-3 rounded-xl text-slate-500 font-medium hover:bg-slate-50 transition-all">  
+            <i class="fas fa-hospital w-5"></i> <span>Multi-Clínica</span>  
+        </a>
+
+        <!-- APP DUEÑOS -->
+        <a href="#" class="flex items-center space-x-3 p-3 rounded-xl text-slate-500 font-medium hover:bg-slate-50 transition-all">  
+            <i class="fas fa-mobile-alt w-5"></i> <span>App Dueños</span>  
+        </a>
+
+                <div class="p-4 border-t border-slate-100 mt-auto">  
+            <div class="flex items-center space-x-3 p-3 mb-2">  
+                <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm">  
+                    CO  
+                </div>  
+                <div class="flex-1 min-w-0">  
+                    <p class="text-sm font-bold text-slate-900 truncate">Carlos Oniell</p>  
+                    <p class="text-xs text-blue-600 font-semibold">Administrador</p>  
+                </div>  
+                <div class="w-2 h-2 bg-green-500 rounded-full status-dot"></div>  
+            </div>  
+            <div class="p-1 border-t border-slate-100">
+            <a href="{% url 'logout' %}" class="flex items-center space-x-3 p-3 rounded-xl text-red-500 font-bold hover:bg-red-50 transition-all">
+                <i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span>
+            </a>
+        </div> 
+        </div>  
+
+    </nav> 
+
+</aside> 
+
+    <!-- MAIN CONTENT -->  
+    <main class="flex-1 min-h-screen bg-slate-50">  
+        
+        <!-- TOP NAV -->  
+        <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 p-4 sticky top-0 z-10 flex justify-between items-center px-6 lg:px-8">  
+            <div class="flex items-center space-x-4">  
+                <button id="mobileMenuBtn" class="lg:hidden w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-200 transition">  
+                    <i class="fas fa-bars"></i>  
+                </button>  
+                <div>  
+                    <h1 class="text-xl font-extrabold text-slate-900">Panel de Control</h1>  
+                    <p class="text-xs text-slate-400 font-medium">Bienvenido de nuevo, Carlos</p>  
+                </div>  
+            </div>  
+            <div class="flex items-center space-x-3">  
+                <div class="relative">  
+                    <button class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-200 transition relative">  
+                        <i class="fas fa-bell"></i>  
+                        <span class="notification-badge">3</span>  
+                    </button>  
+                </div>  
+                <div class="hidden sm:flex items-center space-x-3 pl-4 border-l border-slate-200">  
+                    <div class="text-right">  
+                        <p class="text-sm font-bold text-slate-900 leading-none">Carlos Oniell</p>  
+                        <p class="text-[10px] text-blue-600 font-bold uppercase tracking-wider mt-0.5">Admin</p>  
+                    </div>  
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-full border-2 border-white shadow-sm overflow-hidden">  
+                        <img src="https://ui-avatars.com/api/?name=Carlos+Oniell&background=0D8ABC&color=fff" alt="Avatar" class="w-full h-full object-cover">  
+                    </div>  
+                </div>  
+            </div>  
+        </header>  
+
+        <!-- CONTENT -->  
+        <div class="p-6 lg:p-8 max-w-7xl mx-auto">  
+
+            <!-- FILA 1: STATS RÁPIDOS -->  
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">  
+                <div class="stat-card bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">  
+                    <div class="flex items-center justify-between">  
+                        <div>  
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Pacientes activos</p>  
+                            <p class="text-3xl font-extrabold text-slate-900 mt-1">248</p>  
+                            <p class="text-xs text-green-600 font-bold mt-1"><i class="fas fa-arrow-up mr-1"></i> +12% este mes</p>  
+                        </div>  
+                        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl">  
+                            <i class="fas fa-user-md"></i>  
+                        </div>  
+                    </div>  
+                </div>  
+                <div class="stat-card bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">  
+                    <div class="flex items-center justify-between">  
+                        <div>  
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Citas hoy</p>  
+                            <p class="text-3xl font-extrabold text-slate-900 mt-1">18</p>  
+                            <p class="text-xs text-amber-600 font-bold mt-1"><i class="fas fa-clock mr-1"></i> 4 pendientes</p>  
+                        </div>  
+                        <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-xl">  
+                            <i class="fas fa-calendar-check"></i>  
+                        </div>  
+                    </div>  
+                </div>  
+                <div class="stat-card bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">  
+                    <div class="flex items-center justify-between">  
+                        <div>  
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Ingresos del mes</p>  
+                            <p class="text-3xl font-extrabold text-slate-900 mt-1">$12,480</p>  
+                            <p class="text-xs text-green-600 font-bold mt-1"><i class="fas fa-arrow-up mr-1"></i> +8.3% vs mes ant.</p>  
+                        </div>  
+                        <div class="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center text-xl">  
+                            <i class="fas fa-dollar-sign"></i>  
+                        </div>  
+                    </div>  
+                </div>  
+                <div class="stat-card bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">  
+                    <div class="flex items-center justify-between">  
+                        <div>  
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Productos bajos</p>  
+                            <p class="text-3xl font-extrabold text-slate-900 mt-1">7</p>  
+                            <p class="text-xs text-red-600 font-bold mt-1"><i class="fas fa-exclamation-triangle mr-1"></i> Requieren reposición</p>  
+                        </div>  
+                        <div class="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center text-xl">  
+                            <i class="fas fa-boxes"></i>  
+                        </div>  
+                    </div>  
+                </div>  
+            </div>  
+
+            <!-- BARRA DE MÓDULOS (TABS) -->  
+            <div class="mb-6">  
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-4">Módulos del Sistema</h2>  
+                <div class="flex flex-wrap gap-2">  
+                    <button class="module-btn active-module px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 font-bold text-sm flex items-center space-x-2" data-module="agenda">  
+                        <i class="fas fa-calendar-check text-blue-600 group-hover:text-white"></i>  
+                        <span>Agenda</span>  
+                    </button>  
+                    <button class="module-btn px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 font-semibold text-sm flex items-center space-x-2" data-module="historia">  
+                        <i class="fas fa-file-medical"></i>  
+                        <span>Historia Clínica</span>  
+                    </button>  
+                    <button class="module-btn px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 font-semibold text-sm flex items-center space-x-2" data-module="inventario">  
+                        <i class="fas fa-boxes"></i>  
+                        <span>Inventario</span>  
+                    </button>  
+                    <button class="module-btn px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 font-semibold text-sm flex items-center space-x-2" data-module="peluqueria">  
+                        <i class="fas fa-cut"></i>  
+                        <span>Peluquería</span>  
+                    </button>  
+                    <button class="module-btn px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 font-semibold text-sm flex items-center space-x-2" data-module="contabilidad">  
+                        <i class="fas fa-calculator"></i>  
+                        <span>Contabilidad</span>  
+                    </button>  
+                    <button class="module-btn px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 font-semibold text-sm flex items-center space-x-2" data-module="multiclinica">  
+                        <i class="fas fa-hospital"></i>  
+                        <span>Multi-Clínica</span>  
+                    </button>  
+                    <button class="module-btn px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 font-semibold text-sm flex items-center space-x-2" data-module="appduenos">  
+                        <i class="fas fa-mobile-alt"></i>  
+                        <span>App Dueños</span>  
+                    </button>  
+                    <button class="module-btn px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 font-semibold text-sm flex items-center space-x-2" data-module="reportes">  
+                        <i class="fas fa-chart-line"></i>  
+                        <span>Analytics</span>  
+                    </button>  
+                </div>  
+            </div>  
+
+            <!-- ============================================ -->  
+            <!-- CONTENIDO DE CADA MÓDULO (TABS)             -->  
+            <!-- ============================================ -->  
+
+            <!-- MÓDULO AGENDA -->  
+            <div id="tab-agenda" class="tab-content active">  
+                <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-6 lg:p-8">  
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">  
+                        
+                        <div>  
+                            <h3 class="text-xl font-extrabold text-slate-900">📅 Agenda del Día</h3>  
+                            <p class="text-sm text-slate-400 font-medium">Hoy, 5 de mayo de 2026</p>  
+                        </div>  
+                       
+                    </div>  
+
+                    <!-- Timeline de citas -->  
+                    <div class="space-y-3">  
+                        <div class="flex items-start space-x-4 p-4 rounded-2xl bg-blue-50 border border-blue-100 table-row-hover">  
+                            <div class="min-w-[60px] text-center">  
+                                <p class="text-xs font-bold text-blue-600 uppercase">09:00</p>  
+                                <p class="text-[10px] text-blue-400 font-semibold">- 09:30</p>  
+                            </div>  
+                            <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold shadow-sm shrink-0">  
+                                M  
+                            </div>  
+                            <div class="flex-1">  
+                                <div class="flex items-center justify-between">  
+                                    <p class="font-extrabold text-slate-900">Max → <span class="font-normal text-slate-500">Vacunación triple</span></p>  
+                                    <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-blue-100 text-blue-700 uppercase">Confirmada</span>  
+                                </div>  
+                                <p class="text-xs text-slate-400 font-medium mt-0.5">Dr. Martínez · Consultorio 2</p>  
+                            </div>  
+                            <button class="text-slate-300 hover:text-blue-600 transition"><i class="fas fa-chevron-right"></i></button>  
+                        </div>  
+
+                            <div class="flex items-start space-x-4 p-4 rounded-2xl hover:bg-slate-50 table-row-hover">  
+                            <div class="min-w-[60px] text-center">  
+                                <p class="text-xs font-bold text-slate-500 uppercase">10:00</p>  
+                                <p class="text-[10px] text-slate-400 font-semibold">- 10:45</p>  
+                            </div>  
+                            <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold shadow-sm shrink-0">  
+                                L  
+                            </div>  
+                            <div class="flex-1">  
+                                <div class="flex items-center justify-between">  
+                                    <p class="font-extrabold text-slate-900">Luna → <span class="font-normal text-slate-500">Consulta general</span></p>  
+                                    <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-amber-100 text-amber-700 uppercase">En sala</span>  
+                                </div>  
+                                <p class="text-xs text-slate-400 font-medium mt-0.5">Dra. Rodríguez · Consultorio 1</p>  
+                            </div>  
+                            <button class="text-slate-300 hover:text-blue-600 transition"><i class="fas fa-chevron-right"></i></button>  
+                        </div>  
+
+                        <div class="flex items-start space-x-4 p-4 rounded-2xl hover:bg-slate-50 table-row-hover">  
+                            <div class="min-w-[60px] text-center">  
+                                <p class="text-xs font-bold text-slate-500 uppercase">11:30</p>  
+                                <p class="text-[10px] text-slate-400 font-semibold">- 12:00</p>  
+                            </div>  
+                            <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center text-white font-bold shadow-sm shrink-0">  
+                                R  
+                            </div>  
+                            <div class="flex-1">  
+                                <div class="flex items-center justify-between">  
+                                    <p class="font-extrabold text-slate-900">Rocky → <span class="font-normal text-slate-500">Cirugía menor</span></p>  
+                                    <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-red-100 text-red-700 uppercase">Urgente</span>  
+                                </div>  
+                                <p class="text-xs text-slate-400 font-medium mt-0.5">Dr. Martínez · Quirófano</p>  
+                            </div>  
+                            <button class="text-slate-300 hover:text-blue-600 transition"><i class="fas fa-chevron-right"></i></button>  
+                        </div>  
+
+                        <div class="flex items-start space-x-4 p-4 rounded-2xl hover:bg-slate-50 table-row-hover">  
+                            <div class="min-w-[60px] text-center">  
+                                <p class="text-xs font-bold text-slate-500 uppercase">14:00</p>  
+                                <p class="text-[10px] text-slate-400 font-semibold">- 14:30</p>  
+                            </div>  
+                            <div class="w-10 h-10 bg-gradient-to-br from-sky-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold shadow-sm shrink-0">  
+                                C  
+                            </div>  
+                            <div class="flex-1">  
+                                <div class="flex items-center justify-between">  
+                                    <p class="font-extrabold text-slate-900">Cookie → <span class="font-normal text-slate-500">Baño y corte</span></p>  
+                                    <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-green-100 text-green-700 uppercase">Peluquería</span>  
+                                </div>  
+                                <p class="text-xs text-slate-400 font-medium mt-0.5">Sala de estética · Baño completo</p>  
+                            </div>  
+                            <button class="text-slate-300 hover:text-blue-600 transition"><i class="fas fa-chevron-right"></i></button>  
+                        </div>  
+                    
+                          
+
+                    <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">  
+                        <p class="text-sm text-slate-400 font-medium">  
+                            <i class="fas fa-info-circle mr-1 text-blue-500"></i>  
+                            Mostrando <strong class="text-slate-700">  4 </strong> de <strong class="text-slate-700">  8 </strong> citas programadas  
+                        </p>  
+                        <a href="{% url 'agenda' %}" class="text-sm font-bold text-blue-600 hover:text-blue-800 transition">  
+                            Ver agenda completa <i class="fas fa-arrow-right ml-1"></i>  
+                        </a>  
+                        </div>  
+                </div>  
+            </div>  
+
+            <!-- MÓDULO HISTORIA CLÍNICA -->  
+            <div id="tab-historia" class="tab-content">  
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">  
+                    <!-- Buscador de pacientes -->  
+                    <div class="lg:col-span-1 bg-white rounded-[2rem] border border-slate-100 shadow-sm p-6">  
+                        <h3 class="text-lg font-extrabold text-slate-900 mb-4">🔍 Buscar Paciente</h3>  
+                        <div class="relative mb-4">  
+                            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>  
+                            <input type="text" placeholder="Nombre, dueño o ID..." class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">  
+                        </div>  
+                        <div class="space-y-2">  
+                            <div class="p-3 rounded-xl bg-blue-50 border border-blue-100 cursor-pointer hover:bg-blue-100 transition">  
+                                <p class="font-extrabold text-slate-900 text-sm">🐕 Max</p>  
+                                <p class="text-xs text-slate-400 font-medium">Golden Retriever · 3 años</p>  
+                                <p class="text-xs text-blue-600 font-bold mt-1">Dueño: Laura García</p>  
+                            </div>  
+                            <div class="p-3 rounded-xl hover:bg-slate-50 cursor-pointer transition">  
+                                <p class="font-extrabold text-slate-900 text-sm">🐈 Luna</p>  
+                                <p class="text-xs text-slate-400 font-medium">Persa · 2 años</p>  
+                                <p class="text-xs text-slate-400 font-medium mt-1">Dueño: Roberto Méndez</p>  
+                            </div>  
+                            <div class="p-3 rounded-xl hover:bg-slate-50 cursor-pointer transition">  
+                                <p class="font-extrabold text-slate-900 text-sm">🐕 Rocky</p>  
+                                <p class="text-xs text-slate-400 font-medium">Pastor Alemán · 5 años</p>
+                                                                <p class="text-xs text-slate-400 font-medium mt-1">Dueño: Ana Torres</p>  
+                            </div>  
+                            <div class="p-3 rounded-xl hover:bg-slate-50 cursor-pointer transition">  
+                                <p class="font-extrabold text-slate-900 text-sm">🐈 Cookie</p>  
+                                <p class="text-xs text-slate-400 font-medium">Siames · 1 año</p>  
+                                <p class="text-xs text-slate-400 font-medium mt-1">Dueño: Carlos Ruiz</p>  
+                            </div>  
+                            <div class="p-3 rounded-xl hover:bg-slate-50 cursor-pointer transition">  
+                                <p class="font-extrabold text-slate-900 text-sm">🐕 Toby</p>  
+                                <p class="text-xs text-slate-400 font-medium">Beagle · 4 años</p>  
+                                <p class="text-xs text-slate-400 font-medium mt-1">Dueño: María López</p>  
+                            </div>  
+                        </div>  
+                        <button class="mt-4 w-full py-2.5 border-2 border-dashed border-slate-200 rounded-xl text-slate-400 font-bold text-sm hover:border-blue-300 hover:text-blue-500 transition">  
+                            <i class="fas fa-plus mr-2"></i> Registrar nuevo paciente  
+                        </button>  
+                    </div>  
+
+                    <!-- Expediente activo -->  
+                    <div class="lg:col-span-2 bg-white rounded-[2rem] border border-slate-100 shadow-sm p-6">  
+                        <div class="flex items-center justify-between mb-6">  
+                            <div class="flex items-center space-x-4">  
+                                <div class="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-sm">  
+                                    M  
+                                </div>  
+                                <div>  
+                                    <h3 class="text-xl font-extrabold text-slate-900">Max</h3>  
+                                    <p class="text-sm text-slate-400 font-medium">Golden Retriever · Macho · 3 años · 32 kg</p>  
+                                    <div class="flex items-center space-x-2 mt-1">  
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">🟢 Al día</span>  
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">ID: VT-0042</span>  
+                                    </div>  
+                                </div>  
+                            </div>  
+                            <div class="flex space-x-2">  
+                                <button class="px-3 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition shadow-md shadow-blue-200">  
+                                    <i class="fas fa-edit mr-1"></i> Editar  
+                                </button>  
+                                <button class="px-3 py-2 border border-slate-200 rounded-xl text-slate-500 text-sm font-bold hover:bg-slate-50 transition">  
+                                    <i class="fas fa-download mr-1"></i> PDF  
+                                </button>  
+                            </div>  
+                        </div>  
+
+                        <!-- Tabs internas del expediente -->  
+                        <div class="flex space-x-1 border-b border-slate-100 mb-6">  
+                            <button class="px-4 py-2.5 text-sm font-bold text-blue-600 border-b-2 border-blue-600">Historial</button>  
+                            <button class="px-4 py-2.5 text-sm font-semibold text-slate-400 hover:text-slate-600 transition">Vacunas</button>  
+                            <button class="px-4 py-2.5 text-sm font-semibold text-slate-400 hover:text-slate-600 transition">Notas</button>  
+                            <button class="px-4 py-2.5 text-sm font-semibold text-slate-400 hover:text-slate-600 transition">Adjuntos</button>  
+                        </div>  
+
+                        <!-- Timeline del historial -->  
+                        <div class="space-y-4">  
+                            <div class="flex items-start space-x-3">  
+                                <div class="w-2.5 h-2.5 bg-blue-600 rounded-full mt-2 shrink-0"></div>  
+                                <div class="flex-1">  
+                                                                        <p class="text-sm font-extrabold text-slate-900">Vacunación Triple</p>  
+                                    <p class="text-xs text-slate-400">Hoy · Dr. Martínez</p>  
+                                    <p class="text-xs text-slate-500 mt-1">Aplicación de vacuna triple felina. Próximo refuerzo en 30 días.</p>  
+                                </div>  
+                            </div>  
+                            <div class="flex items-start space-x-3">  
+                                <div class="w-2.5 h-2.5 bg-green-500 rounded-full mt-2 shrink-0"></div>  
+                                <div class="flex-1">  
+                                    <p class="text-sm font-extrabold text-slate-900">Control de peso y desparasitación</p>  
+                                    <p class="text-xs text-slate-400">15 Abr 2026 · Dra. Rodríguez</p>  
+                                    <p class="text-xs text-slate-500 mt-1">Peso: 31.8 kg. Desparasitación interna aplicada. Todo en orden.</p>  
+                                </div>  
+                            </div>  
+                            <div class="flex items-start space-x-3">  
+                                <div class="w-2.5 h-2.5 bg-green-500 rounded-full mt-2 shrink-0"></div>  
+                                <div class="flex-1">  
+                                    <p class="text-sm font-extrabold text-slate-900">Consulta general + Baño</p>  
+                                    <p class="text-xs text-slate-400">28 Mar 2026 · Dra. Rodríguez</p>  
+                                    <p class="text-xs text-slate-500 mt-1">Revisión general sin novedades. Baño medicado por dermatitis leve.</p>  
+                                </div>  
+                            </div>  
+                            <div class="flex items-start space-x-3">  
+                                <div class="w-2.5 h-2.5 bg-purple-500 rounded-full mt-2 shrink-0"></div>  
+                                <div class="flex-1">  
+                                    <p class="text-sm font-extrabold text-slate-900">Primera consulta - Registro inicial</p>  
+                                    <p class="text-xs text-slate-400">10 Ene 2026 · Dr. Martínez</p>  
+                                    <p class="text-xs text-slate-500 mt-1">Paciente en buen estado general. Se crea historial y plan de vacunación.</p>  
+                                </div>  
+                            </div>  
+                        </div>  
+                    </div>  
+                </div>  
+            </div>  
+
+            <!-- MÓDULO INVENTARIO -->  
+            <div id="tab-inventario" class="tab-content">  
+                <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-6 lg:p-8">  
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">  
+                        <div>  
+                            <h3 class="text-xl font-extrabold text-slate-900">📦 Inventario General</h3>  
+                            <p class="text-sm text-slate-400 font-medium">Total: 168 productos registrados</p>  
+                        </div>  
+                        <div class="flex items-center space-x-3 mt-3 lg:mt-0">  
+                            <div class="relative">  
+                                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>  
+                                <input type="text" placeholder="Buscar producto..." class="pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition w-56">  
+                            </div>  
+                            <button class="px-4 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition shadow-md shadow-blue-200">  
+                                <i class="fas fa-plus mr-2"></i> Nuevo Producto  
+                            </button>  
+                        </div>  
+                    </div>  
+
+                    <!-- Alertas de stock -->  
+                    <div class="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6 flex items-center justify-between">  
+                        <div class="flex items-center space-x-3">  
+                            <div class="w-10 h-10 bg-red-100 text-red-600 rounded-xl flex items-center justify-center">  
+                                <i class="fas fa-exclamation-triangle"></i>  
+                                                        </div>  
+                            <div>  
+                                <p class="text-sm font-extrabold text-red-800">⚠️ 7 productos con stock crítico</p>  
+                                <p class="text-xs text-red-600 font-medium">Se recomienda realizar pedido de reposición urgente</p>  
+                            </div>  
+                        </div>  
+                        <button class="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700 transition shadow-sm">  
+                            Ver alertas <i class="fas fa-arrow-right ml-1"></i>  
+                        </button>  
+                    </div>  
+
+                    <!-- Tabla de inventario -->  
+                    <div class="overflow-x-auto">  
+                        <table class="w-full text-sm">  
+                            <thead>  
+                                <tr class="text-left text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">  
+                                    <th class="pb-3 pr-4">Producto</th>  
+                                    <th class="pb-3 pr-4">Categoría</th>  
+                                    <th class="pb-3 pr-4">Stock</th>  
+                                    <th class="pb-3 pr-4">Precio</th>  
+                                    <th class="pb-3 pr-4">Estado</th>  
+                                    <th class="pb-3"></th>  
+                                </tr>  
+                            </thead>  
+                            <tbody>  
+                                <tr class="border-b border-slate-50 table-row-hover">  
+                                    <td class="py-3 pr-4 font-extrabold text-slate-900">Vacuna Triple Felina</td>  
+                                    <td class="py-3 pr-4 text-slate-500 font-medium">Vacunas</td>  
+                                    <td class="py-3 pr-4">  
+                                        <div class="flex items-center space-x-2">  
+                                            <div class="w-16 bg-slate-100 rounded-full h-1.5">  
+                                                <div class="progress-bar h-1.5 rounded-full" style="width: 85%"></div>  
+                                            </div>  
+                                            <span class="text-xs font-bold text-slate-600">34</span>  
+                                        </div>  
+                                    </td>  
+                                    <td class="py-3 pr-4 font-bold text-slate-800">$25.00</td>  
+                                    <td class="py-3 pr-4">  
+                                        <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-green-100 text-green-700">Normal</span>  
+                                    </td>  
+                                    <td class="py-3 text-right">  
+                                        <button class="text-slate-300 hover:text-blue-600 transition"><i class="fas fa-ellipsis-h"></i></button>  
+                                    </td>  
+                                </tr>  
+                                <tr class="border-b border-slate-50 table-row-hover">  
+                                    <td class="py-3 pr-4 font-extrabold text-slate-900">Antipulgas NexGard</td>  
+                                    <td class="py-3 pr-4 text-slate-500 font-medium">Farmacia</td>  
+                                    <td class="py-3 pr-4">  
+                                        <div class="flex items-center space-x-2">  
+                                            <div class="w-16 bg-slate-100 rounded-full h-1.5">  
+                                                <div class="progress-bar h-1.5 rounded-full" style="width: 12%"></div>  
+                                            </div>  
+                                            <span class="text-xs font-bold text-red-600">5</span>  
+                                        </div>  
+                                    </td>  
+                                    <td class="py-3 pr-4 font-bold text-slate-800">$18.50</td>  
+                                    <td class="py-3 pr-4">  
+                                        <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-red-100 text-red-700">⚠️ Crítico</span>  
+                                    </td>  
+                                    <td class="py-3 text-right">  
+                                        <button class="text-slate-300 hover:text-blue-600 transition"><i class="fas fa-ellipsis-h"></i></button>  
+                                    </td>  
+                                </tr>  
+                                <tr class="border-b border-slate-50 table-row-hover">  
+                                    <td class="py-3 pr-4 font-extrabold text-slate-900">Shampoo Medicado</td>  
+                                    <td class="py-3 pr-4 text-slate-500 font-medium">Peluquería</td>  
+                                    <td class="py-3 pr-4">  
+                                        <div class="flex items-center space-x-2">  
+                                                                                        <div class="w-16 bg-slate-100 rounded-full h-1.5">  
+                                                <div class="progress-bar h-1.5 rounded-full" style="width: 45%"></div>  
+                                            </div>  
+                                            <span class="text-xs font-bold text-slate-600">18</span>  
+                                        </div>  
+                                    </td>  
+                                    <td class="py-3 pr-4 font-bold text-slate-800">$12.00</td>  
+                                    <td class="py-3 pr-4">  
+                                        <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-amber-100 text-amber-700">⚠️ Medio</span>  
+                                    </td>  
+                                    <td class="py-3 text-right">  
+                                        <button class="text-slate-300 hover:text-blue-600 transition"><i class="fas fa-ellipsis-h"></i></button>  
+                                    </td>  
+                                </tr>  
+                                <tr class="border-b border-slate-50 table-row-hover">  
+                                    <td class="py-3 pr-4 font-extrabold text-slate-900">Correas de Nylon (S)</td>  
+                                    <td class="py-3 pr-4 text-slate-500 font-medium">Accesorios</td>  
+                                    <td class="py-3 pr-4">  
+                                        <div class="flex items-center space-x-2">  
+                                            <div class="w-16 bg-slate-100 rounded-full h-1.5">  
+                                                <div class="progress-bar h-1.5 rounded-full" style="width: 72%"></div>  
+                                            </div>  
+                                            <span class="text-xs font-bold text-slate-600">29</span>  
+                                        </div>  
+                                    </td>  
+                                    <td class="py-3 pr-4 font-bold text-slate-800">$8.99</td>  
+                                    <td class="py-3 pr-4">  
+                                        <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-green-100 text-green-700">Normal</span>  
+                                    </td>  
+                                    <td class="py-3 text-right">  
+                                        <button class="text-slate-300 hover:text-blue-600 transition"><i class="fas fa-ellipsis-h"></i></button>  
+                                    </td>  
+                                </tr>  
+                                <tr class="table-row-hover">  
+                                    <td class="py-3 pr-4 font-extrabold text-slate-900">Comida Premium Perro 15kg</td>  
+                                    <td class="py-3 pr-4 text-slate-500 font-medium">Alimentos</td>  
+                                    <td class="py-3 pr-4">  
+                                        <div class="flex items-center space-x-2">  
+                                            <div class="w-16 bg-slate-100 rounded-full h-1.5">  
+                                                <div class="progress-bar h-1.5 rounded-full" style="width: 8%"></div>  
+                                            </div>  
+                                            <span class="text-xs font-bold text-red-600">3</span>  
+                                        </div>  
+                                    </td>  
+                                    <td class="py-3 pr-4 font-bold text-slate-800">$45.00</td>  
+                                    <td class="py-3 pr-4">  
+                                        <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-red-100 text-red-700">⚠️ Crítico</span>  
+                                    </td>  
+                                    <td class="py-3 text-right">  
+                                        <button class="text-slate-300 hover:text-blue-600 transition"><i class="fas fa-ellipsis-h"></i></button>  
+                                    </td>  
+                                </tr>  
+                            </tbody>  
+                        </table>  
+                    </div>  
+
+                    <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">  
+                        <p class="text-sm text-slate-400 font-medium">  
+                            Mostrando <strong class="text-slate-700">5</strong> de <strong class="text-slate-700">42</strong> productos  
+                        </p>  
+                        <button class="text-sm font-bold text-blue-600 hover:text-blue-800 transition">  
+                            Ver inventario completo <i class="fas fa-arrow-right ml-1"></i>  
+                        </button>  
+                    </div>  
+                </div>  
+            </div>  
+
+            <!-- MÓDULO PELUQUERÍA -->  
+            <div id="tab-peluqueria" class="tab-content">  
+                                <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-6 lg:p-8">  
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">  
+                        <div>  
+                            <h3 class="text-xl font-extrabold text-slate-900">✂️ Peluquería Canina & Felina</h3>  
+                            <p class="text-sm text-slate-400 font-medium">🐕 4 servicios agendados para hoy</p>  
+                        </div>  
+                        <div class="flex items-center space-x-3 mt-3 lg:mt-0">  
+                            <button class="px-4 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition shadow-md shadow-blue-200">  
+                                <i class="fas fa-plus mr-2"></i> Nueva Cita  
+                            </button>  
+                            <select class="px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20">  
+                                <option>Hoy</option>  
+                                <option>Esta semana</option>  
+                                <option>Este mes</option>  
+                            </select>  
+                        </div>  
+                    </div>  
+
+                    <!-- Grid de servicios -->  
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">  
+                        <div class="p-4 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-100">  
+                            <div class="flex items-center justify-between mb-2">  
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700">En proceso</span>  
+                                <i class="fas fa-scissors text-orange-400"></i>  
+                            </div>  
+                            <p class="font-extrabold text-slate-900">Cookie 🐈</p>  
+                            <p class="text-xs text-slate-400">Baño + Corte sanitario</p>  
+                            <p class="text-xs font-bold text-slate-500 mt-2">10:00 AM · Estilista: María</p>  
+                        </div>  
+                        <div class="p-4 rounded-2xl bg-gradient-to-br from-blue-50 to-sky-50 border border-blue-100">  
+                            <div class="flex items-center justify-between mb-2">  
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">Agendado</span>  
+                                <i class="fas fa-clock text-blue-400"></i>  
+                            </div>  
+                            <p class="font-extrabold text-slate-900">Rocky 🐕</p>  
+                            <p class="text-xs text-slate-400">Corte completo + Cepillado</p>  
+                            <p class="text-xs font-bold text-slate-500 mt-2">11:30 AM · Estilista: Pedro</p>  
+                        </div>  
+                        <div class="p-4 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100">  
+                            <div class="flex items-center justify-between mb-2">  
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">Completado</span>  
+                                <i class="fas fa-check-circle text-green-400"></i>  
+                            </div>  
+                            <p class="font-extrabold text-slate-900">Luna 🐈</p>  
+                            <p class="text-xs text-slate-400">Baño medicado + Corte</p>  
+                            <p class="text-xs font-bold text-slate-500 mt-2">09:00 AM · Estilista: María</p>  
+                        </div>  
+                        <div class="p-4 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100">  
+                            <div class="flex items-center justify-between mb-2">  
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">Agendado</span>  
+                                <i class="fas fa-star text-purple-400"></i>  
+                            </div>  
+                                                        <p class="font-extrabold text-slate-900">Max 🐕</p>  
+                            <p class="text-xs text-slate-400">Corte premium + Spa</p>  
+                            <p class="text-xs font-bold text-slate-500 mt-2">14:00 PM · Estilista: Pedro</p>  
+                        </div>  
+                    </div>  
+
+                    <!-- Precios rápidos -->  
+                    <div class="bg-slate-50 rounded-2xl p-5">  
+                        <h4 class="text-sm font-extrabold text-slate-900 mb-3">💰 Lista de Precios</h4>  
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">  
+                            <div>  
+                                <p class="font-bold text-slate-800">Baño básico</p>  
+                                <p class="text-xs text-slate-400">Desde $15.00</p>  
+                            </div>  
+                            <div>  
+                                <p class="font-bold text-slate-800">Baño medicado</p>  
+                                <p class="text-xs text-slate-400">Desde $25.00</p>  
+                            </div>  
+                            <div>  
+                                <p class="font-bold text-slate-800">Corte completo</p>  
+                                <p class="text-xs text-slate-400">Desde $35.00</p>  
+                            </div>  
+                            <div>  
+                                <p class="font-bold text-slate-800">Paquete Spa</p>  
+                                <p class="text-xs text-slate-400">Desde $55.00</p>  
+                            </div>  
+                        </div>  
+                    </div>  
+                </div>  
+            </div>  
+
+            <!-- MÓDULO CONTABILIDAD -->  
+            <div id="tab-contabilidad" class="tab-content">  
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">  
+                    <div class="lg:col-span-2 bg-white rounded-[2rem] border border-slate-100 shadow-sm p-6">  
+                        <div class="flex items-center justify-between mb-6">  
+                            <h3 class="text-lg font-extrabold text-slate-900">📊 Resumen Financiero</h3>  
+                            <select class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 bg-white">  
+                                <option>Mayo 2026</option>  
+                                <option>Abril 2026</option>  
+                                <option>Marzo 2026</option>  
+                            </select>  
+                        </div>  
+                        <div class="grid grid-cols-3 gap-4 mb-6">  
+                            <div class="p-4 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100">  
+                                <p class="text-xs font-bold text-green-600 uppercase tracking-wider">Ingresos</p>  
+                                <p class="text-2xl font-extrabold text-slate-900 mt-1">$18,420</p>  
+                                <p class="text-[10px] text-green-600 font-bold mt-0.5">↑ 12% vs mes ant.</p>  
+                            </div>  
+                            <div class="p-4 rounded-xl bg-gradient-to-br from-red-50 to-rose-50 border border-red-100">  
+                                <p class="text-xs font-bold text-red-600 uppercase tracking-wider">Gastos</p>  
+                                <p class="text-2xl font-extrabold text-slate-900 mt-1">$5,940</p>  
+                                <p class="text-[10px] text-red-600 font-bold mt-0.5">↑ 3% vs mes ant.</p>  
+                            </div>  
+                            <div class="p-4 rounded-xl bg-gradient-to-br from-blue-50 to-sky-50 border border-blue-100">  
+                                <p class="text-xs font-bold text-blue-600 uppercase tracking-wider">Ganancia Neta</p>  
+                                <p class="text-2xl font-extrabold text-slate-900 mt-1">$12,480</p>  
+                                <p class="text-[10px] text-blue-600 font-bold mt-0.5">📈 Margen: 67.7%</p>  
+                            </div>  
+                        </div>  
+                        <!-- Últimas transacciones -->  
+                        <h4 class="text-sm font-extrabold text-slate-900 mb-3">Últimas Transacciones</h4>  
+                                                    <p class="font-extrabold text-slate-900">Max 🐕</p>  
+                            <p class="text-xs text-slate-400">Baño premium + Spa</p>  
+                            <p class="text-xs font-bold text-slate-500 mt-2">14:00 PM · Estilista: Pedro</p>  
+                        </div>  
+                    </div>  
+
+                    <!-- Lista de servicios del día -->  
+                    <h4 class="font-extrabold text-slate-800 mb-3">📋 Servicios del día</h4>  
+                    <div class="overflow-x-auto">  
+                        <table class="w-full text-sm">  
+                            <thead>  
+                                <tr class="text-left text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">  
+                                    <th class="pb-3 pr-4">Mascota</th>  
+                                    <th class="pb-3 pr-4">Servicio</th>  
+                                    <th class="pb-3 pr-4">Horario</th>  
+                                    <th class="pb-3 pr-4">Estilista</th>  
+                                    <th class="pb-3 pr-4">Precio</th>  
+                                    <th class="pb-3">Estado</th>  
+                                </tr>  
+                            </thead>  
+                            <tbody>  
+                                <tr class="border-b border-slate-50 table-row-hover">  
+                                    <td class="py-3 pr-4 font-extrabold text-slate-900">Luna</td>  
+                                    <td class="py-3 pr-4 text-slate-500 font-medium">Baño medicado + Corte</td>  
+                                    <td class="py-3 pr-4 font-semibold text-slate-700">09:00 - 09:45</td>  
+                                    <td class="py-3 pr-4 text-slate-500">María</td>  
+                                    <td class="py-3 pr-4 font-bold text-slate-800">$35.00</td>  
+                                    <td class="py-3"><span class="text-[10px] font-bold px-2 py-1 rounded-full bg-green-100 text-green-700">✔ Completado</span></td>  
+                                </tr>  
+                                <tr class="border-b border-slate-50 table-row-hover">  
+                                    <td class="py-3 pr-4 font-extrabold text-slate-900">Cookie</td>  
+                                    <td class="py-3 pr-4 text-slate-500 font-medium">Baño + Corte sanitario</td>  
+                                    <td class="py-3 pr-4 font-semibold text-slate-700">10:00 - 10:30</td>  
+                                    <td class="py-3 pr-4 text-slate-500">María</td>  
+                                    <td class="py-3 pr-4 font-bold text-slate-800">$28.00</td>  
+                                    <td class="py-3"><span class="text-[10px] font-bold px-2 py-1 rounded-full bg-orange-100 text-orange-700">🔄 En proceso</span></td>  
+                                </tr>  
+                                <tr class="border-b border-slate-50 table-row-hover">  
+                                    <td class="py-3 pr-4 font-extrabold text-slate-900">Rocky</td>  
+                                    <td class="py-3 pr-4 text-slate-500 font-medium">Corte completo + Cepillado</td>  
+                                    <td class="py-3 pr-4 font-semibold text-slate-700">11:30 - 12:30</td>  
+                                    <td class="py-3 pr-4 text-slate-500">Pedro</td>  
+                                    <td class="py-3 pr-4 font-bold text-slate-800">$45.00</td>  
+                                    <td class="py-3"><span class="text-[10px] font-bold px-2 py-1 rounded-full bg-blue-100 text-blue-700">📅 Agendado</span></td>  
+                                </tr>  
+                                <tr class="table-row-hover">  
+                                    <td class="py-3 pr-4 font-extrabold text-slate-900">Max</td>  
+                                    <td class="py-3 pr-4 text-slate-500 font-medium">Baño premium + Spa</td>  
+                                    <td class="py-3 pr-4 font-semibold text-slate-700">14:00 - 15:00</td>  
+                                    <td class="py-3 pr-4 text-slate-500">Pedro</td>  
+                                    <td class="py-3 pr-4 font-bold text-slate-800">$55.00</td>  
+
+                                                            <h4 class="text-sm font-extrabold text-slate-900 mb-3">Últimas Transacciones</h4>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center"><i class="fas fa-plus text-xs"></i></div>
+                                    <div><p class="text-sm font-bold text-slate-900">Consulta Max</p><p class="text-[10px] text-slate-400">Hace 2 horas</p></div>
+                                </div>
+                                <p class="text-sm font-extrabold text-green-600">+$45.00</p>
+                            </div>
+                            <div class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center"><i class="fas fa-minus text-xs"></i></div>
+                                    <div><p class="text-sm font-bold text-slate-900">Compra insumos</p><p class="text-[10px] text-slate-400">Ayer</p></div>
+                                </div>
+                                <p class="text-sm font-extrabold text-red-600">-$320.00</p>
+                            </div>
+                            <div class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center"><i class="fas fa-plus text-xs"></i></div>
+                                    <div><p class="text-sm font-bold text-slate-900">Peluquería Cookie</p><p class="text-[10px] text-slate-400">Ayer</p></div>
+                                </div>
+                                <p class="text-sm font-extrabold text-green-600">+$35.00</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-6">
+                        <h4 class="text-sm font-extrabold text-slate-900 mb-4">📅 Próximos Vencimientos</h4>
+                        <div class="space-y-3">
+                            <div class="p-3 rounded-xl bg-amber-50 border border-amber-100">
+                                <p class="text-xs font-bold text-amber-800">Factura Proveedor #024</p>
+                                <p class="text-xs text-amber-600 font-medium">Vence en 3 días · $1,200.00</p>
+                            </div>
+                            <div class="p-3 rounded-xl bg-red-50 border border-red-100">
+                                <p class="text-xs font-bold text-red-800">Renta Local</p>
+                                <p class="text-xs text-red-600 font-medium">Vence en 7 días · $2,500.00</p>
+                            </div>
+                            <button class="w-full mt-2 py-2 border-2 border-dashed border-slate-200 rounded-xl text-xs font-bold text-slate-400 hover:border-blue-300 hover:text-blue-500 transition">Ver todos</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html> 
+<html lang="es">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Dashboard | ZenithVet</title>  
+    <script src="https://cdn.tailwindcss.com"></script>  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">  
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">  
+    
+    <style>  
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }  
+        
+        .sidebar-item { transition: all 0.2s ease; }  
+        .sidebar-item:hover { background: rgba(59, 130, 246, 0.1); color: #2563eb; }  
+        .sidebar-item.active { background: rgba(59, 130, 246, 0.1); color: #2563eb; font-weight: 700; }  
+
+        .stat-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }  
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08); }  
+
+        .module-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }  
+        .module-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.3); }  
+        .module-btn.active-module { background: #2563eb; color: white; border-color: #2563eb; box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.3); }  
+
+        .tab-content { display: none; }  
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }  
+
+        @keyframes fadeIn {  
+            from { opacity: 0; transform: translateY(10px); }  
+            to { opacity: 1; transform: translateY(0); }  
+        }  
+
+        @keyframes pulse-dot {  
+            0%, 100% { opacity: 1; }  
+            50% { opacity: 0.5; }  
+        }  
+        .status-dot { animation: pulse-dot 1.5s infinite; }  
+
+        .progress-bar {  
+            background: linear-gradient(90deg, #2563eb, #60a5fa);  
+            transition: width 1s ease;  
+        }  
+
+        .table-row-hover:hover { background: rgba(59, 130, 246, 0.04); }  
+
+        /* Scrollbar personalizado */  
+        ::-webkit-scrollbar { width: 6px; }  
+        ::-webkit-scrollbar-track { background: #f1f5f9; }  
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }  
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }  
+
+        .notification-badge {  
+            position: absolute;  
+            top: -4px;  
+            right: -4px;  
+            background: #ef4444;  
+            color: white;  
+            font-size: 10px;  
+            font-weight: 700;  
+            width: 18px;  
+            height: 18px;  
+            border-radius: 50%;  
+            display: flex;  
+            align-items: center;  
+            justify-content: center;  
+            border: 2px solid white;  
+        }  
+
+        select, input[type="date"] {  
+            font-family: 'Plus Jakarta Sans', sans-serif;  
+        }  
+    </style>  
+</head>  
+<body class="bg-slate-50 flex">  
+
+    <!-- SIDEBAR -->  
+    <aside class="w-64 bg-white h-screen border-r border-slate-200 hidden lg:flex flex-col sticky top-0 z-20">  
+    <div class="p-6 flex items-center space-x-3">  
+        <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-400 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">  
+            <i class="fas fa-paw"></i>  
+        </div>  
+        <span class="text-xl font-extrabold text-slate-900 tracking-tight">ZenithVet</span>  
+    </div>  
+
+    <nav class="flex-1 px-4 space-y-1 mt-2 overflow-y-auto">  
+        <!-- DASHBOARD -->
+        <a href="{% url 'dashboard' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.resolver_match.url_name == 'dashboard' %} bg-blue-50 text-blue-700 font-bold {% else %} text-slate-500 hover:bg-slate-50 font-medium {% endif %}">  
+            <i class="fas fa-th-large w-5 {% if request.resolver_match.url_name == 'dashboard' %} text-blue-600 {% endif %}"></i> 
+            <span>Dashboard</span>  
+        </a>  
+
+        <!-- AGENDA -->
+        <a href="{% url 'agenda' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.resolver_match.url_name == 'agenda' %} bg-blue-50 text-blue-700 font-bold {% else %} text-slate-500 hover:bg-slate-50 font-medium {% endif %}">  
+            <i class="fas fa-calendar-alt w-5 {% if request.resolver_match.url_name == 'agenda' %} text-blue-600 {% endif %}"></i> 
+            <span>Agenda</span>  
+            <span class="ml-auto bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full">12</span>  
+        </a>  
+
+        <!-- PACIENTES -->
+        <a href="{% url 'pacientes' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.resolver_match.url_name == 'pacientes' %} bg-blue-50 text-blue-700 font-bold {% else %} text-slate-500 hover:bg-slate-50 font-medium {% endif %}">  
+            <i class="fas fa-user-md w-5 {% if request.resolver_match.url_name == 'pacientes' %} text-blue-600 {% endif %}"></i> 
+            <span>Pacientes</span>  
+            <span class="ml-auto bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full">48</span>  
+        </a>  
+
+        <!-- INVENTARIO -->
+        <a href="{% url 'inventario' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.resolver_match.url_name == 'inventario' %} bg-blue-50 text-blue-700 font-bold {% else %} text-slate-500 hover:bg-slate-50 font-medium {% endif %}">  
+            <i class="fas fa-boxes w-5 {% if request.resolver_match.url_name == 'inventario' %} text-blue-600 {% endif %}"></i> 
+            <span>Inventario</span>  
+        </a>  
+
+        <!-- PELUQUERÍA -->
+        <a href="{% url 'peluqueria' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.resolver_match.url_name == 'peluqueria' %} bg-blue-50 text-blue-700 font-bold {% else %} text-slate-500 hover:bg-slate-50 font-medium {% endif %}">  
+            <i class="fas fa-cut w-5 {% if request.resolver_match.url_name == 'peluqueria' %} text-blue-600 {% endif %}"></i> 
+            <span>Peluquería</span>  
+        </a>  
+
+       
+
+        <!-- DIVIDER PARA OTROS MÓDULOS -->
+        <div class="pt-4 pb-2">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3">Gestión Avanzada</p>
+        </div>
+
+         <!-- CONTABILIDAD / CAJA -->
+        <a href="{% url 'caja' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.resolver_match.url_name == 'caja' %} bg-blue-50 text-blue-700 font-bold {% else %} text-slate-500 hover:bg-slate-50 font-medium {% endif %}">  
+            <i class="fas fa-calculator w-5 {% if request.resolver_match.url_name == 'caja' %} text-blue-600 {% endif %}"></i> 
+            <span>Contabilidad</span>  
+        </a>  
+
+        <!-- ANALYTICS / REPORTES -->
+        <a href="{% url 'reportes' %}" class="flex items-center space-x-3 p-3 rounded-xl transition-all {% if request.resolver_match.url_name == 'reportes' %} bg-blue-50 text-blue-700 font-bold {% else %} text-slate-500 hover:bg-slate-50 font-medium {% endif %}">  
+            <i class="fas fa-chart-line w-5 {% if request.resolver_match.url_name == 'reportes' %} text-blue-600 {% endif %}"></i> 
+            <span>Analytics</span>  
+        </a>
+
+        <!-- MULTI-CLÍNICA -->
+        <a href="#" class="flex items-center space-x-3 p-3 rounded-xl text-slate-500 font-medium hover:bg-slate-50 transition-all">  
+            <i class="fas fa-hospital w-5"></i> <span>Multi-Clínica</span>  
+        </a>
+
+        <!-- APP DUEÑOS -->
+        <a href="#" class="flex items-center space-x-3 p-3 rounded-xl text-slate-500 font-medium hover:bg-slate-50 transition-all">  
+            <i class="fas fa-mobile-alt w-5"></i> <span>App Dueños</span>  
+        </a>
+
+                <div class="p-4 border-t border-slate-100 mt-auto">  
+            <div class="flex items-center space-x-3 p-3 mb-2">  
+                <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm">  
+                    CO  
+                </div>  
+                <div class="flex-1 min-w-0">  
+                    <p class="text-sm font-bold text-slate-900 truncate">Carlos Oniell</p>  
+                    <p class="text-xs text-blue-600 font-semibold">Administrador</p>  
+                </div>  
+                <div class="w-2 h-2 bg-green-500 rounded-full status-dot"></div>  
+            </div>  
+            <div class="p-1 border-t border-slate-100">
+            <a href="{% url 'logout' %}" class="flex items-center space-x-3 p-3 rounded-xl text-red-500 font-bold hover:bg-red-50 transition-all">
+                <i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span>
+            </a>
+        </div> 
+        </div>  
+
+    </nav> 
+
+</aside> 
+
+    <!-- MAIN CONTENT -->  
+    <main class="flex-1 min-h-screen bg-slate-50">  
+        
+        <!-- TOP NAV -->  
+        <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 p-4 sticky top-0 z-10 flex justify-between items-center px-6 lg:px-8">  
+            <div class="flex items-center space-x-4">  
+                <button id="mobileMenuBtn" class="lg:hidden w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-200 transition">  
+                    <i class="fas fa-bars"></i>  
+                </button>  
+                <div>  
+                    <h1 class="text-xl font-extrabold text-slate-900">Panel de Control</h1>  
+                    <p class="text-xs text-slate-400 font-medium">Bienvenido de nuevo, Carlos</p>  
+                </div>  
+            </div>  
+            <div class="flex items-center space-x-3">  
+                <div class="relative">  
+                    <button class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-200 transition relative">  
+                        <i class="fas fa-bell"></i>  
+                        <span class="notification-badge">3</span>  
+                    </button>  
+                </div>  
+                <div class="hidden sm:flex items-center space-x-3 pl-4 border-l border-slate-200">  
+                    <div class="text-right">  
+                        <p class="text-sm font-bold text-slate-900 leading-none">Carlos Oniell</p>  
+                        <p class="text-[10px] text-blue-600 font-bold uppercase tracking-wider mt-0.5">Admin</p>  
+                    </div>  
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-full border-2 border-white shadow-sm overflow-hidden">  
+                        <img src="https://ui-avatars.com/api/?name=Carlos+Oniell&background=0D8ABC&color=fff" alt="Avatar" class="w-full h-full object-cover">  
+                    </div>  
+                </div>  
+            </div>  
+        </header>  
+
+        <!-- CONTENT -->  
+        <div class="p-6 lg:p-8 max-w-7xl mx-auto">   
+
+            <!-- ============================================ -->  
+            <!-- CONTENIDO DE CADA MÓDULO (TABS)             -->  
+            <!-- ============================================ -->  
+
+            <!-- MÓDULO AGENDA -->  
+            <div id="tab-agenda" class="tab-content active">  
+                <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-6 lg:p-8">  
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">  
+                        <div>  
+                            <h3 class="text-xl font-extrabold text-slate-900">📅 Agenda del Día</h3>  
+                            <p class="text-sm text-slate-400 font-medium">Hoy, 5 de mayo de 2026</p>  
+                        </div>  
+                        <div class="flex items-center space-x-3 mt-3 lg:mt-0">  
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition shadow-md shadow-blue-200">  
+                                <i class="fas fa-plus mr-2"></i> Nueva Cita  
+                            </button>  
+                            <button class="px-4 py-2 border border-slate-200 rounded-xl text-slate-600 font-semibold text-sm hover:bg-slate-50 transition">  
+                                <i class="fas fa-sync-alt mr-2"></i> Hoy  
+                            </button>  
+                        </div>  
+                    </div>  
+
+                    <!-- Timeline de citas -->  
+                    <div class="space-y-3">  
+                        <div class="flex items-start space-x-4 p-4 rounded-2xl bg-blue-50 border border-blue-100 table-row-hover">  
+                            <div class="min-w-[60px] text-center">  
+                                <p class="text-xs font-bold text-blue-600 uppercase">09:00</p>  
+                                <p class="text-[10px] text-blue-400 font-semibold">- 09:30</p>  
+                            </div>  
+                            <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold shadow-sm shrink-0">  
+                                M  
+                            </div>  
+                            <div class="flex-1">  
+                                <div class="flex items-center justify-between">  
+                                    <p class="font-extrabold text-slate-900">Max → <span class="font-normal text-slate-500">Vacunación triple</span></p>  
+                                    <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-blue-100 text-blue-700 uppercase">Confirmada</span>  
+                                </div>  
+                                <p class="text-xs text-slate-400 font-medium mt-0.5">Dr. Martínez · Consultorio 2</p>  
+                            </div>  
+                            <button class="text-slate-300 hover:text-blue-600 transition"><i class="fas fa-chevron-right"></i></button>  
+                        </div>  
+
+                            <div class="flex items-start space-x-4 p-4 rounded-2xl hover:bg-slate-50 table-row-hover">  
+                            <div class="min-w-[60px] text-center">  
+                                <p class="text-xs font-bold text-slate-500 uppercase">10:00</p>  
+                                <p class="text-[10px] text-slate-400 font-semibold">- 10:45</p>  
+                            </div>  
+                            <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold shadow-sm shrink-0">  
+                                L  
+                            </div>  
+                            <div class="flex-1">  
+                                <div class="flex items-center justify-between">  
+                                    <p class="font-extrabold text-slate-900">Luna → <span class="font-normal text-slate-500">Consulta general</span></p>  
+                                    <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-amber-100 text-amber-700 uppercase">En sala</span>  
+                                </div>  
+                                <p class="text-xs text-slate-400 font-medium mt-0.5">Dra. Rodríguez · Consultorio 1</p>  
+                            </div>  
+                            <button class="text-slate-300 hover:text-blue-600 transition"><i class="fas fa-chevron-right"></i></button>  
+                        </div>  
+                        
+
+                        <div class="flex items-start space-x-4 p-4 rounded-2xl hover:bg-slate-50 table-row-hover">  
+                            <div class="min-w-[60px] text-center">  
+                                <p class="text-xs font-bold text-slate-500 uppercase">11:30</p>  
+                                <p class="text-[10px] text-slate-400 font-semibold">- 12:00</p>  
+                            </div>  
+                            <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center text-white font-bold shadow-sm shrink-0">  
+                                R  
+                            </div>  
+                            <div class="flex-1">  
+                                <div class="flex items-center justify-between">  
+                                    <p class="font-extrabold text-slate-900">Rocky → <span class="font-normal text-slate-500">Cirugía menor</span></p>  
+                                    <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-red-100 text-red-700 uppercase">Urgente</span>  
+                                </div>  
+                                <p class="text-xs text-slate-400 font-medium mt-0.5">Dr. Martínez · Quirófano</p>  
+                            </div>  
+                            <button class="text-slate-300 hover:text-blue-600 transition"><i class="fas fa-chevron-right"></i></button>  
+                        </div>  
+
+                        <div class="flex items-start space-x-4 p-4 rounded-2xl hover:bg-slate-50 table-row-hover">  
+                            <div class="min-w-[60px] text-center">  
+                                <p class="text-xs font-bold text-slate-500 uppercase">14:00</p>  
+                                <p class="text-[10px] text-slate-400 font-semibold">- 14:30</p>  
+                            </div>  
+                            <div class="w-10 h-10 bg-gradient-to-br from-sky-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold shadow-sm shrink-0">  
+                                C  
+                            </div>  
+                            <div class="flex-1">  
+                                <div class="flex items-center justify-between">  
+                                    <p class="font-extrabold text-slate-900">Cookie → <span class="font-normal text-slate-500">Baño y corte</span></p>  
+                                    <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-green-100 text-green-700 uppercase">Peluquería</span>  
+                                </div>  
+                                <p class="text-xs text-slate-400 font-medium mt-0.5">Sala de estética · Baño completo</p>  
+                            </div>  
+                            <button class="text-slate-300 hover:text-blue-600 transition"><i class="fas fa-chevron-right"></i></button>  
+                        </div>  
+
+
+                        <div class="flex items-start space-x-4 p-4 rounded-2xl hover:bg-slate-50 table-row-hover">  
+                            <div class="min-w-[60px] text-center">  
+                                <p class="text-xs font-bold text-slate-500 uppercase">10:00</p>  
+                                <p class="text-[10px] text-slate-400 font-semibold">- 10:45</p>  
+                            </div>  
+                            <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold shadow-sm shrink-0">  
+                                L  
+                            </div>  
+                            <div class="flex-1">  
+                                <div class="flex items-center justify-between">  
+                                    <p class="font-extrabold text-slate-900">Luna → <span class="font-normal text-slate-500">Consulta general</span></p>  
+                                    <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-amber-100 text-amber-700 uppercase">En sala</span>  
+                                </div>  
+                                <p class="text-xs text-slate-400 font-medium mt-0.5">Dra. Rodríguez · Consultorio 1</p>  
+                            </div>  
+                            <button class="text-slate-300 hover:text-blue-600 transition"><i class="fas fa-chevron-right"></i></button>  
+                        </div>  
+
+                    <div class="flex items-start space-x-4 p-4 rounded-2xl hover:bg-slate-50 table-row-hover">  
+                            <div class="min-w-[60px] text-center">  
+                                <p class="text-xs font-bold text-slate-500 uppercase">15:30</p>  
+                                <p class="text-[10px] text-slate-400 font-semibold">- 16:15</p>  
+                            </div>  
+                            <div class="w-10 h-10 bg-gradient-to-br from-rose-400 to-red-500 rounded-full flex items-center justify-center text-white font-bold shadow-sm shrink-0">  
+                                T  
+                            </div>  
+                            <div class="flex-1">  
+                                <div class="flex items-center justify-between">  
+                                    <p class="font-extrabold text-slate-900">Toby → <span class="font-normal text-slate-500">Desparasitación + control</span></p>  
+                                    <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-red-100 text-red-700 uppercase">Urgente</span>  
+                                </div>  
+                                <p class="text-xs text-slate-400 font-medium mt-0.5">Dra. Rodríguez · Consultorio 1</p>  
+                            </div>  
+                            <button class="text-slate-300 hover:text-blue-600 transition"><i class="fas fa-chevron-right"></i></button>  
+                        </div>  
+                    </div>  
+
+                    <div class="space-y-3">  
+                        <div class="flex items-start space-x-4 p-4 rounded-2xl hover:bg-slate-50 table-row-hover">  
+                            <div class="min-w-[60px] text-center">   
+                                <p class="text-xs font-bold text-slate-500 uppercase">09:00</p>  
+                                <p class="text-[10px] text-slate-400 font-semibold">- 09:30</p>  
+                            </div>  
+                            <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold shadow-sm shrink-0">  
+                                M  
+                            </div>  
+                            <div class="flex-1">  
+                                <div class="flex items-center justify-between">  
+                                    <p class="font-extrabold text-slate-900">Max → <span class="font-normal text-slate-500">Vacunación triple</span></p>  
+                                    <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-blue-100 text-blue-700 uppercase">Confirmada</span>  
+                                </div>  
+                                <p class="text-xs text-slate-400 font-medium mt-0.5">Dr. Martínez · Consultorio 2</p>  
+                            </div>  
+                            <button class="text-slate-300 hover:text-blue-600 transition"><i class="fas fa-chevron-right"></i></button>  
+                        </div>  
+
+
+                    <div class="flex items-start space-x-4 p-4 rounded-2xl hover:bg-slate-50 table-row-hover">  
+                            <div class="min-w-[60px] text-center">  
+                                <p class="text-xs font-bold text-slate-500 uppercase">15:30</p>  
+                                <p class="text-[10px] text-slate-400 font-semibold">- 16:15</p>  
+                            </div>  
+                            <div class="w-10 h-10 bg-gradient-to-br from-rose-400 to-red-500 rounded-full flex items-center justify-center text-white font-bold shadow-sm shrink-0">  
+                                T  
+                            </div>  
+                            <div class="flex-1">  
+                                <div class="flex items-center justify-between">  
+                                    <p class="font-extrabold text-slate-900">Toby → <span class="font-normal text-slate-500">Desparasitación + control</span></p>  
+                                    <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-green-100 text-green-700 uppercase">Peluquería</span>  
+                                </div>  
+                                <p class="text-xs text-slate-400 font-medium mt-0.5">Dra. Rodríguez · Consultorio 1</p>  
+                            </div>  
+                            <button class="text-slate-300 hover:text-blue-600 transition"><i class="fas fa-chevron-right"></i></button>  
+                        </div>  
+                    </div>  
+                    <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">  
+                        <p class="text-sm text-slate-400 font-medium">  
+                            <i class="fas fa-info-circle mr-1 text-blue-500"></i>  
+                            Mostrando <strong class="text-slate-700">8</strong> de <strong class="text-slate-700">8</strong> citas programadas  
+                        </p>  
+                        
+                    </div>  
+                </div>  
+            </div>  
+        </main>
+    </div>
+
+</body>
+</html>

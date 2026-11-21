@@ -1,0 +1,654 @@
+<!DOCTYPE html>  
+<html lang="es">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>{{ titulo }} | {{ subtitulo }}</title>  
+    <script src="https://cdn.tailwindcss.com"></script>  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">  
+    <style>  
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');  
+        * { font-family: 'Inter', sans-serif; }  
+        html { scroll-behavior: smooth; }  
+        .bg-zenith { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #2563eb 100%); }  
+        .card-hover { transition: all 0.3s ease; }  
+        .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.12); }  
+        .fade-in { animation: fadeIn 0.8s ease forwards; opacity: 0; }  
+        @keyframes fadeIn { from { opacity:0; transform:translateY(25px); } to { opacity:1; transform:translateY(0); } }  
+        .delay-1 { animation-delay: 0.1s; }  
+        .delay-2 { animation-delay: 0.3s; }  
+        .delay-3 { animation-delay: 0.5s; }  
+        .delay-4 { animation-delay: 0.7s; }  
+        .modalidad-tag { background: linear-gradient(135deg, #dbeafe, #ede9fe); }  
+    </style>  
+</head>  
+<body class="bg-gray-50 text-gray-800">  
+
+    <!-- NAVBAR -->  
+    <nav class="bg-white/95 backdrop-blur shadow-sm fixed w-full z-50">  
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">  
+            <div class="flex justify-between items-center h-16">  
+                <div class="flex items-center space-x-2">  
+                    <i class="fas fa-paw text-blue-600 text-2xl"></i>  
+                    <span class="text-xl font-bold text-gray-900">{{ titulo }}</span>  
+                    <span class="hidden sm:inline text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-semibold">SaaS</span>  
+                </div>  
+                <div class="hidden md:flex space-x-8">  
+                    <a href="#inicio" class="text-gray-600 hover:text-blue-600 transition font-medium">Inicio</a>  
+                    <a href="#caracteristicas" class="text-gray-600 hover:text-blue-600 transition font-medium">Características</a>  
+                    <a href="#modulos" class="text-gray-600 hover:text-blue-600 transition font-medium">Módulos</a>  
+                    <a href="#planes" class="text-gray-600 hover:text-blue-600 transition font-medium">Planes</a>  
+                    <a href="#contacto" class="text-gray-600 hover:text-blue-600 transition font-medium">Contacto</a>  
+                </div>  
+                <div class="flex space-x-3">  
+    <!-- Antes: /login/ | Ahora: Usamos el tag de Django -->
+    <a href="{% url 'login' %}" class="text-gray-600 hover:text-blue-600 font-medium px-3 py-2 transition">
+        Iniciar Sesión
+    </a>  
+    <a href="{% url 'registro' %}" class="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition font-medium text-sm">
+        Solicitar Demo
+    </a>  
+</div>
+            </div>  
+        </div>  
+    </nav>  
+
+<!-- HERO: ZENITHVET -->  
+<section id="inicio" class="relative bg-slate-900 min-h-screen flex items-center overflow-hidden pt-16">
+    <!-- Fondo con Gradiente Dinámico -->
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-900 via-slate-900 to-blue-800 opacity-90"></div>
+    
+    <!-- Decoración geométrica de fondo -->
+    <div class="absolute top-0 right-0 -mr-20 -mt-20 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-3xl"></div>
+
+    <div class="max-w-7xl mx-auto px-4 py-20 relative z-10">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            
+            <!-- COLUMNA IZQUIERDA: MENSAJE -->
+            <div class="text-white">
+                <div class="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md border border-white/20 text-blue-200 px-4 py-2 rounded-full text-sm font-semibold mb-6">
+                    <span class="flex h-2 w-2 rounded-full bg-blue-400 animate-pulse"></span>
+                    <span>🚀 Plataforma SaaS Multi-Clínica v1.0</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 tracking-tight">
+                    {{ titulo }}<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">
+                        Inteligencia Veterinaria
+                    </span>
+                </h1>
+                
+                <p class="text-xl text-blue-100/80 mb-10 max-w-xl leading-relaxed">
+                    {{ mensaje|default:"La solución integral para la gestión de tu veterinaria. Simplifica tus procesos, mejora la atención y haz crecer tu negocio." }}
+                </p>
+
+                <!-- Botones de Acción -->
+                <div class="flex flex-wrap gap-4 mb-12">
+                    <a href="#" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-lg shadow-blue-900/20 text-lg flex items-center">
+                        <i class="fas fa-rocket mr-2 text-sm"></i> Solicitar Demo Gratis
+                    </a>
+                    <a href="#caracteristicas" class="bg-white/5 hover:bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-2xl font-bold transition-all text-lg">
+                        Ver Funciones
+                    </a>
+                </div>
+
+                <!-- Trust Badges -->
+                <div class="flex items-center space-x-6 text-sm text-blue-200/60">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-shield-alt text-blue-400"></i>
+                        <span>Seguridad Enterprise</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-cloud text-blue-400"></i>
+                        <span>100% en la Nube</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: DASHBOARD PREVIEW -->
+            <div class="hidden lg:block relative">
+                <!-- Efecto de resplandor detrás del panel -->
+                <div class="absolute inset-0 bg-blue-600/20 blur-[100px] -z-10"></div>
+                
+                <div class="bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 shadow-2xl overflow-hidden shadow-blue-900/40">
+                    <div class="flex items-center justify-between mb-8">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-chart-pie text-white"></i>
+                            </div>
+                            <div>
+                                <p class="text-white font-bold">Zenith Dashboard</p>
+                                <p class="text-xs text-blue-300">Resumen de hoy</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs text-blue-400 font-mono uppercase tracking-widest">Live Status</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Card Mini 1 -->
+                        <div class="bg-white/5 border border-white/5 p-4 rounded-2xl">
+                            <p class="text-blue-300 text-[10px] uppercase font-bold mb-1">Citas Hoy</p>
+                            <p class="text-3xl font-bold text-white">24</p>
+                            <div class="mt-2 h-1 w-full bg-slate-700 rounded-full overflow-hidden">
+                                <div class="h-full bg-blue-400 w-3/4"></div>
+                            </div>
+                        </div>
+                        <!-- Card Mini 2 -->
+                        <div class="bg-white/5 border border-white/5 p-4 rounded-2xl">
+                            <p class="text-blue-300 text-[10px] uppercase font-bold mb-1">Ingresos</p>
+                            <p class="text-3xl font-bold text-white">$4.8k</p>
+                            <p class="text-[10px] text-green-400 mt-1"><i class="fas fa-arrow-up"></i> +12% hoy</p>
+                        </div>
+                        <!-- Listado simulado -->
+                        <div class="col-span-2 space-y-3 mt-2">
+                            <div class="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-purple-500/20 text-purple-400 rounded-lg flex items-center justify-center text-xs">
+                                        <i class="fas fa-video"></i>
+                                    </div>
+                                    <span class="text-sm text-white">Teleconsulta: Luna</span>
+                                </div>
+                                <span class="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded">En 15 min</span>
+                            </div>
+                            <div class="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-green-500/20 text-green-400 rounded-lg flex items-center justify-center text-xs">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <span class="text-sm text-white">Max: Vacuna Completa</span>
+                                </div>
+                                <span class="text-[10px] text-slate-400">Hace 2h</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notificación flotante externa -->
+                <div class="absolute -bottom-6 -right-6 bg-white p-4 rounded-2xl shadow-2xl flex items-center space-x-3 animate-bounce shadow-blue-500/20">
+                    <div class="w-10 h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-800">Nueva Cita Online</p>
+                        <p class="text-[10px] text-slate-500">Mascota: Toby (Canino)</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+     <!-- CARACTERÍSTICAS -->  
+    <section id="caracteristicas" class="py-20 bg-white">  
+        <div class="max-w-7xl mx-auto px-4">  
+            <div class="text-center mb-16">  
+                <span class="text-blue-600 font-semibold text-sm uppercase tracking-wider">Todo lo que necesitas</span>  
+                <h2 class="text-4xl font-bold text-gray-900 mt-2">Una plataforma, infinitas soluciones</h2>  
+                <p class="text-gray-500 mt-4 max-w-2xl mx-auto">Desde la agenda hasta la contabilidad, ZenithVet centraliza toda la operación de tu clínica veterinaria.</p>  
+            </div>  
+             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">  
+                {% for item in caracteristicas %}  
+                <div class="card-hover bg-gray-50 rounded-2xl p-6 border border-gray-100">  
+                    <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-4">  
+                        <i class="fas {{ item.icono }} text-2xl"></i>  
+                    </div>  
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">{{ item.titulo }}</h3>  
+                    <p class="text-gray-500 text-sm">{{ item.descripcion }}</p>  
+                </div>  
+                {% endfor %}  
+            </div>  
+        </div>  
+    </section>  
+
+    <!-- MÓDULOS DEL SISTEMA -->  
+    <section id="modulos" class="py-20 bg-gray-50">  
+        <div class="max-w-7xl mx-auto px-4">  
+            <div class="text-center mb-16">  
+                <span class="text-blue-600 font-semibold text-sm uppercase tracking-wider">Estructura Modular</span>  
+                <h2 class="text-4xl font-bold text-gray-900 mt-2">Módulos especializados</h2>  
+                <p class="text-gray-500 mt-4 max-w-2xl mx-auto">Cada módulo funciona de forma independiente o integrada, adaptándose al tamaño de tu clínica.</p>  
+            </div>  
+            <div class="grid md:grid-cols-2 gap-8">  
+                {% for modulo in modulos %}  
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 card-hover">  
+                    <div class="flex items-center space-x-3 mb-6">  
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold  
+                            {% if modulo.color == 'blue' %}bg-blue-600  
+                            {% elif modulo.color == 'green' %}bg-green-600  
+                            {% elif modulo.color == 'purple' %}bg-purple-600  
+                            {% elif modulo.color == 'orange' %}bg-orange-600  
+                            {% endif %}">  
+                            {{ forloop.counter }}  
+                        </div>  
+                        <h3 class="text-xl font-bold text-gray-900">{{ modulo.nombre }}</h3>  
+                    </div>  
+                    <ul class="space-y-3">  
+                        {% for item in modulo.items %}  
+                        <li class="flex items-center space-x-3 text-gray-600">  
+                            <i class="fas fa-check-circle text-green-500 text-sm"></i>  
+                            <span>{{ item }}</span>  
+                        </li>  
+                        {% endfor %}  
+                    </ul>  
+                </div>  
+                {% endfor %}  
+            </div>  
+        </div>  
+    </section>  
+
+    <!-- SECCIÓN: APP MÓVIL PARA DUEÑOS -->
+<section id="app-duenos" class="py-24 bg-slate-50 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            
+            <!-- Columna de Texto -->
+            <div class="order-2 lg:order-1">
+                <span class="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase tracking-widest mb-6">
+                    Mobile Experience
+                </span>
+                <h2 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 leading-tight">
+                    Tu clínica en el bolsillo <br><span class="text-blue-600">de tus clientes.</span>
+                </h2>
+                <p class="text-lg text-slate-600 mb-10 leading-relaxed">
+                    Fideliza a tus clientes permitiendo que los dueños gestionen citas, pagos e historiales desde su smartphone. Una experiencia premium que te diferencia de la competencia.
+                </p>
+
+                <!-- Lista de Características Refinada -->
+                <div class="grid sm:grid-cols-2 gap-6 mb-12">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 bg-white shadow-md rounded-2xl flex items-center justify-center flex-shrink-0 text-blue-600">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900">Recordatorios</h4>
+                            <p class="text-sm text-slate-500">Notificaciones push para vacunas y citas.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 bg-white shadow-md rounded-2xl flex items-center justify-center flex-shrink-0 text-green-600">
+                            <i class="fas fa-file-medical"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900">Historial 24/7</h4>
+                            <p class="text-sm text-slate-500">Resultados y recetas siempre a mano.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de Tienda Oficiales -->
+                <div class="flex flex-wrap gap-4">
+                    <a href="#" class="flex items-center bg-black text-white px-5 py-3 rounded-2xl hover:bg-slate-800 transition-all transform hover:-translate-y-1">
+                        <i class="fab fa-apple text-3xl mr-3"></i>
+                        <div class="text-left">
+                            <p class="text-[10px] uppercase opacity-70">Download on the</p>
+                            <p class="text-lg font-semibold leading-none">App Store</p>
+                        </div>
+                    </a>
+                    <a href="#" class="flex items-center bg-black text-white px-5 py-3 rounded-2xl hover:bg-slate-800 transition-all transform hover:-translate-y-1">
+                        <i class="fab fa-google-play text-2xl mr-3"></i>
+                        <div class="text-left">
+                            <p class="text-[10px] uppercase opacity-70">Get it on</p>
+                            <p class="text-lg font-semibold leading-none">Google Play</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Columna del Mockup de Teléfono -->
+            <div class="order-1 lg:order-2 flex justify-center relative">
+                <!-- Círculo decorativo de fondo -->
+                <div class="absolute w-[500px] h-[500px] bg-blue-200/50 rounded-full blur-3xl -z-10"></div>
+                
+                <!-- Frame del iPhone (Hecho con CSS) -->
+                <div class="relative mx-auto border-gray-800 dark:border-gray-800 bg-gray-800 border-[14px] rounded-[3rem] h-[640px] w-[310px] shadow-2xl">
+                    <!-- Notch del iPhone -->
+                    <div class="w-[140px] h-[30px] bg-gray-800 absolute top-0 left-1/2 -translate-x-1/2 rounded-b-3xl z-20"></div>
+                    
+                    <!-- Pantalla interna de la App -->
+                    <div class="rounded-[2.2rem] overflow-hidden w-full h-full bg-slate-100 flex flex-col">
+                        <!-- App Header -->
+                        <div class="bg-blue-600 p-6 pt-12 text-white">
+                            <div class="flex justify-between items-center mb-4">
+                                <i class="fas fa-bars opacity-50"></i>
+                                <span class="font-bold text-sm tracking-tight">ZenithVet</span>
+                                <div class="w-8 h-8 rounded-full bg-white/20"></div>
+                            </div>
+                            <h3 class="text-xl font-bold italic">¡Hola, Max! 👋</h3>
+                        </div>
+
+                        <!-- App Body -->
+                        <div class="p-4 -mt-6 flex-1 space-y-4">
+                            <!-- Card: Próxima Cita -->
+                            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-[10px] font-black text-blue-600 uppercase tracking-tighter">Próxima Cita</span>
+                                    <span class="text-[10px] text-slate-400">15 Mayo</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-slate-800">Control Anual</p>
+                                        <p class="text-[11px] text-slate-500">Dr. Ricardo Pérez</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card: Mascota (La que se veía rara antes) -->
+                            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                                <div class="flex items-center space-x-3 mb-4">
+                                    <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=100" class="w-12 h-12 rounded-full object-cover shadow-md">
+                                    <div>
+                                        <p class="text-sm font-bold text-slate-800">Max</p>
+                                        <p class="text-[10px] text-slate-500 font-medium">Golden Retriever • 3 años</p>
+                                    </div>
+                                    <span class="ml-auto bg-green-100 text-green-700 text-[9px] font-bold px-2 py-1 rounded-full uppercase">Saludable</span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div class="bg-slate-50 p-2 rounded-xl text-center">
+                                        <p class="text-sm font-black text-slate-800">5</p>
+                                        <p class="text-[8px] text-slate-400 uppercase font-bold">Visitas</p>
+                                    </div>
+                                    <div class="bg-slate-50 p-2 rounded-xl text-center">
+                                        <p class="text-sm font-black text-slate-800">3</p>
+                                        <p class="text-[8px] text-slate-400 uppercase font-bold">Vacunas</p>
+                                    </div>
+                                    <div class="bg-slate-50 p-2 rounded-xl text-center">
+                                        <p class="text-sm font-black text-slate-800">2</p>
+                                        <p class="text-[8px] text-slate-400 uppercase font-bold">Recetas</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notificación de Vacuna -->
+                            <div class="bg-amber-50 border border-amber-100 rounded-2xl p-4 flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-amber-400 text-white rounded-full flex items-center justify-center text-xs animate-pulse">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div>
+                                    <p class="text-[11px] font-bold text-amber-800 leading-none">Vacuna Pendiente</p>
+                                    <p class="text-[10px] text-amber-600 mt-1">Rabia - Vence en 3 días</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botón de Acción simulado -->
+                        <div class="p-4 bg-white border-t border-slate-100">
+                            <div class="w-full bg-blue-600 text-white rounded-xl py-3 text-center text-xs font-bold shadow-lg shadow-blue-200">
+                                + Agendar Nueva Cita
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+    <!-- SECCIÓN DE IMPACTO Y ESTADÍSTICAS -->
+<section class="py-24 bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-800 relative overflow-hidden">
+    <!-- Decoración de fondo -->
+    <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-400 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 relative z-10">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            
+            <!-- Bloque de Texto y Stats -->
+            <div>
+                <h2 class="text-4xl font-extrabold text-white mb-6 leading-tight">
+                    Resultados reales para <br><span class="text-blue-200">clínicas de alto rendimiento.</span>
+                </h2>
+                
+                <div class="grid grid-cols-2 gap-8 text-white">
+                    <div class="border-l-2 border-blue-400 pl-4">
+                        <p class="text-4xl font-bold">+500</p>
+                        <p class="text-blue-100 text-sm">Clínicas activas</p>
+                    </div>
+                    <div class="border-l-2 border-blue-400 pl-4">
+                        <p class="text-4xl font-bold">+50K</p>
+                        <p class="text-blue-100 text-sm">Mascotas felices</p>
+                    </div>
+                    <div class="border-l-2 border-blue-400 pl-4">
+                        <p class="text-4xl font-bold">+200K</p>
+                        <p class="text-blue-100 text-sm">Citas procesadas</p>
+                    </div>
+                    <div class="border-l-2 border-blue-400 pl-4">
+                        <p class="text-4xl font-bold">98%</p>
+                        <p class="text-blue-100 text-sm">Satisfacción</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Previsualización de la App (La Ficha de Max) -->
+            <div class="relative">
+                <!-- Card Principal -->
+                <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 shadow-2xl transform hover:rotate-1 transition-transform duration-500">
+                    <div class="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
+                        <span class="text-white font-medium">Historial Médico Digital</span>
+                        <span class="text-xs bg-green-500/20 text-green-300 px-3 py-1 rounded-full border border-green-500/30 font-bold uppercase tracking-wider">Sincronizado</span>
+                    </div>
+
+                    <!-- Info Mascota -->
+                    <div class="flex items-center space-x-5 mb-8">
+                        <div class="relative">
+                            <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=100" alt="Max" class="w-16 h-16 rounded-2xl object-cover border-2 border-blue-400 shadow-lg">
+                            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-indigo-700 rounded-full"></div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white leading-none">Max</h3>
+                            <p class="text-blue-200 text-sm mt-1">Golden Retriever • 3 años</p>
+                        </div>
+                        <div class="ml-auto">
+                             <span class="bg-white text-blue-700 text-[10px] font-black px-2 py-1 rounded-md uppercase">Premium Client</span>
+                        </div>
+                    </div>
+
+                    <!-- Stats de la Mascota -->
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="bg-white/5 rounded-2xl p-4 text-center border border-white/5 hover:bg-white/10 transition-colors">
+                            <p class="text-2xl font-bold text-white">5</p>
+                            <p class="text-blue-200 text-[10px] uppercase font-bold tracking-widest mt-1">Visitas</p>
+                        </div>
+                        <div class="bg-white/5 rounded-2xl p-4 text-center border border-white/5 hover:bg-white/10 transition-colors">
+                            <p class="text-2xl font-bold text-white">3</p>
+                            <p class="text-blue-200 text-[10px] uppercase font-bold tracking-widest mt-1">Vacunas</p>
+                        </div>
+                        <div class="bg-white/5 rounded-2xl p-4 text-center border border-white/5 hover:bg-white/10 transition-colors">
+                            <p class="text-2xl font-bold text-white">2</p>
+                            <p class="text-blue-200 text-[10px] uppercase font-bold tracking-widest mt-1">Recetas</p>
+                        </div>
+                    </div>
+
+                    <!-- Botón de Acción simulado -->
+                    <button class="w-full mt-8 bg-white text-blue-700 font-bold py-3 rounded-xl shadow-lg hover:bg-blue-50 transition-colors flex items-center justify-center space-x-2">
+                        <i class="fas fa-calendar-plus text-sm"></i>
+                        <span>Agendar Nueva Cita</span>
+                    </button>
+                </div>
+
+                <!-- Elemento flotante decorativo -->
+                <div class="absolute -bottom-6 -left-6 bg-indigo-900/80 backdrop-blur-lg border border-white/10 p-4 rounded-2xl shadow-xl hidden md:block">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                        <p class="text-white text-xs font-semibold">Próxima Vacuna: 15 de Mayo</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+    <!-- TESTIMONIOS (Versión Horizontal / Wide) -->  
+<section class="py-20 bg-gray-50">  
+    <div class="max-w-7xl mx-auto px-4">  
+        <div class="text-center mb-16">  
+            <span class="text-blue-600 font-semibold text-sm uppercase tracking-wider">Testimonios</span>  
+            <h2 class="text-4xl font-bold text-gray-900 mt-2">Lo que dicen nuestros clientes</h2>  
+            <p class="text-gray-500 mt-4 max-w-2xl mx-auto">Clínicas veterinarias que ya transformaron su operación con ZenithVet</p>  
+        </div>  
+
+        <!-- Contenedor Grid: 3 columnas en escritorio, 1 en móvil -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">  
+            
+            <!-- Testimonio 1 -->
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 flex flex-col h-full">  
+                <div class="flex items-center space-x-1 text-yellow-400 mb-4">  
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>  
+                </div>
+                <p class="text-gray-600 italic mb-8 flex-grow">"Desde que implementamos ZenithVet, el ausentismo en citas bajó un 40%. Los dueños aman la app móvil y nosotros tenemos el control total del inventario médico."</p>  
+                <div class="flex items-center space-x-4 border-t border-gray-50 pt-6">  
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex-shrink-0 flex items-center justify-center text-blue-600 font-bold">DC</div>  
+                    <div>  
+                        <p class="font-bold text-gray-900 leading-none">Dra. Claudia Rivas</p>  
+                        <p class="text-xs text-gray-500 mt-1 uppercase tracking-tighter">Directora de VetHealth</p>  
+                    </div>  
+                </div>  
+            </div>  
+
+            <!-- Testimonio 2 -->
+            <div class="bg-white rounded-2xl p-8 shadow-md border border-blue-50 flex flex-col h-full transform scale-105 z-10">  
+                <div class="flex items-center space-x-1 text-yellow-400 mb-4">  
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>  
+                </div>
+                <p class="text-gray-600 italic mb-8 flex-grow">"El bot de WhatsApp es increíble. Filtra las emergencias reales y agenda citas automáticamente mientras estamos operando. Es como tener un recepcionista 24/7."</p>  
+                <div class="flex items-center space-x-4 border-t border-gray-50 pt-6">  
+                    <div class="w-12 h-12 bg-blue-600 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold">AM</div>  
+                    <div>  
+                        <p class="font-bold text-gray-900 leading-none">Dr. Alejandro Mendieta</p>  
+                        <p class="text-xs text-gray-500 mt-1 uppercase tracking-tighter">Clínica San Roque</p>  
+                    </div>  
+                </div>  
+            </div>  
+
+            <!-- Testimonio 3 -->
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 flex flex-col h-full">  
+                <div class="flex items-center space-x-1 text-yellow-400 mb-4">  
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>  
+                </div>
+                <p class="text-gray-600 italic mb-8 flex-grow">"La integración de telemedicina nos permitió atender consultas de seguimiento sin que el cliente se desplace, cobrando por la plataforma de forma segura."</p>  
+                <div class="flex items-center space-x-4 border-t border-gray-50 pt-6">  
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex-shrink-0 flex items-center justify-center text-blue-600 font-bold">SB</div>  
+                    <div>  
+                        <p class="font-bold text-gray-900 leading-none">Sofía Beltrán</p>  
+                        <p class="text-xs text-gray-500 mt-1 uppercase tracking-tighter">Grooming & Vet Care</p>  
+                    </div>  
+                </div>  
+            </div>  
+
+        </div>  
+    </div>  
+</section>
+
+<!-- PRECIOS -->
+<section id="pricing" class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+        <h2 class="text-4xl font-bold text-gray-900 mb-4">Planes diseñados para crecer</h2>
+        <p class="text-gray-500 mb-16 max-w-xl mx-auto">La App para dueños está incluida en todos los planes. Sin costos ocultos por mascota.</p>
+        
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Starter -->
+            <div class="border border-gray-200 rounded-3xl p-8 hover:border-blue-500 transition-colors">
+                <h3 class="text-xl font-bold text-gray-900">Starter</h3>
+                <div class="mt-4 flex justify-center items-baseline">
+                    <span class="text-4xl font-extrabold tracking-tight text-gray-900">$59</span>
+                    <span class="ml-1 text-xl font-semibold text-gray-500">/mes</span>
+                </div>
+                <ul class="mt-8 space-y-4 text-left text-sm text-gray-600">
+                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Agenda y Ficha Médica</li>
+                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Inventario de Retail</li>
+                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> App para Dueños (Basic)</li>
+                    <li class="flex items-center text-gray-400"><i class="fas fa-times mr-2"></i> Facturación Electrónica</li>
+                </ul>
+                <a href="#" class="mt-10 block w-full bg-gray-100 text-gray-900 font-semibold py-3 rounded-xl hover:bg-gray-200">Empezar gratis</a>
+            </div>
+
+            <!-- Growth (Popular) -->
+            <div class="border-2 border-blue-600 rounded-3xl p-8 relative shadow-xl">
+                <span class="absolute top-0 right-8 -translate-y-1/2 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Más popular</span>
+                <h3 class="text-xl font-bold text-gray-900">Growth</h3>
+                <div class="mt-4 flex justify-center items-baseline">
+                    <span class="text-4xl font-extrabold tracking-tight text-gray-900">$119</span>
+                    <span class="ml-1 text-xl font-semibold text-gray-500">/mes</span>
+                </div>
+                <ul class="mt-8 space-y-4 text-left text-sm text-gray-600">
+                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Todo en Starter</li>
+                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Facturación Electrónica</li>
+                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Bot de WhatsApp (Core)</li>
+                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Gestión de Peluquería</li>
+                </ul>
+                <a href="#" class="mt-10 block w-full bg-blue-600 text-white font-semibold py-3 rounded-xl shadow-lg shadow-blue-200 hover:bg-blue-700">Adquirir Plan</a>
+            </div>
+
+            <!-- Business -->
+            <div class="border border-gray-200 rounded-3xl p-8 hover:border-blue-500 transition-colors">
+                <h3 class="text-xl font-bold text-gray-900">Business</h3>
+                <div class="mt-4 flex justify-center items-baseline">
+                    <span class="text-4xl font-extrabold tracking-tight text-gray-900">$199</span>
+                    <span class="ml-1 text-xl font-semibold text-gray-500">/mes</span>
+                </div>
+                <ul class="mt-8 space-y-4 text-left text-sm text-gray-600">
+                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Todo en Growth</li>
+                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Telemedicina Integrada</li>
+                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Multi-clínica (hasta 3)</li>
+                    <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Soporte VIP 24/7</li>
+                </ul>
+                <a href="#" class="mt-10 block w-full bg-gray-100 text-gray-900 font-semibold py-3 rounded-xl hover:bg-gray-200">Hablar con ventas</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-gray-900 text-gray-400 py-12 border-t border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div class="col-span-2 md:col-span-1">
+            <span class="text-2xl font-bold text-white tracking-tighter italic">ZENITH<span class="text-blue-500">VET</span></span>
+            <p class="mt-4 text-sm">El ecosistema digital más potente para clínicas veterinarias en LATAM.</p>
+            <div class="flex space-x-4 mt-6">
+                <a href="#" class="hover:text-white transition-colors"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="hover:text-white transition-colors"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="hover:text-white transition-colors"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+        <div>
+            <h4 class="text-white font-bold mb-4">Producto</h4>
+            <ul class="space-y-2 text-sm">
+                <li><a href="#" class="hover:text-white transition-colors">Características</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">Historia Clínica</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">App Móvil</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">WhatsApp Bot</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="text-white font-bold mb-4">Compañía</h4>
+            <ul class="space-y-2 text-sm">
+                <li><a href="#" class="hover:text-white transition-colors">Sobre nosotros</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">Contacto</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="text-white font-bold mb-4">Legal</h4>
+            <ul class="space-y-2 text-sm">
+                <li><a href="#" class="hover:text-white transition-colors">Términos de servicio</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">Privacidad</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">Patentes</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-gray-800 text-center text-xs uppercase tracking-widest font-semibold">
+        &copy; 2026 Zenith Control Systems. Todos los derechos reservados.
+    </div>
+</footer>
+
+</body>
+</html>
